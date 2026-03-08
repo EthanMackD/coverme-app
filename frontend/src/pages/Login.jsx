@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css';
 
-const API_URL = 'http://localhost:5001/api/auth';
+const API_URL = 'http://localhost:5000/api/auth';
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,6 +16,7 @@ function Login() {
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -29,22 +31,23 @@ function Login() {
     setError('');
 
     try {
-      const url = isLogin 
+      const url = isLogin
         ? `${API_URL}/login`
         : `${API_URL}/register`;
 
-      const payload = isLogin 
+      const payload = isLogin
         ? { email: formData.email, password: formData.password }
         : formData;
 
       const response = await axios.post(url, payload);
 
-      setMessage(response.data.message);
-      
       if (isLogin && response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
-        setMessage('Login successful! Token saved.');
+        navigate('/dashboard');
+      } else {
+        setMessage(response.data.message + ' Please login.');
+        setIsLogin(true);
       }
 
     } catch (err) {

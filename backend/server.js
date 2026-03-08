@@ -29,12 +29,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 console.log('Body parser middleware added');
 
-console.log('Loading auth routes...');
 const authRoutes = require('./routes/auth');
-console.log('Auth routes loaded');
+const shiftRoutes = require('./routes/shifts');
+const swapRoutes = require('./routes/swaps');
 
 app.use('/api/auth', authRoutes);
-console.log('Auth routes registered');
+app.use('/api/shifts', shiftRoutes);
+app.use('/api/swaps', swapRoutes);
+console.log('All routes registered');
 
 app.get('/api/test', (req, res) => {
   console.log('Test route hit!');
