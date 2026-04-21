@@ -8,6 +8,7 @@ router.use(auth);
 
 // Employee routes
 router.get('/my-shifts', shiftController.getMyShifts);
+router.get('/calendar', shiftController.getCalendarData);
 router.get('/employees', shiftController.getEmployees);
 
 // Manager routes

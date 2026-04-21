@@ -5,6 +5,7 @@ import MyShifts from './pages/MyShifts';
 import SwapRequests from './pages/SwapRequests';
 import ManageShifts from './pages/ManageShifts';
 import Approvals from './pages/Approvals';
+import Calendar from './pages/Calendar';
 import Layout from './components/Layout';
 import './index.css';
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/shifts" element={<ProtectedRoute><MyShifts /></ProtectedRoute>} />
         <Route path="/swaps" element={<ProtectedRoute><SwapRequests /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
         <Route path="/manage-shifts" element={<ManagerRoute><ManageShifts /></ManagerRoute>} />
         <Route path="/approvals" element={<ManagerRoute><Approvals /></ManagerRoute>} />
         <Route path="*" element={<Navigate to="/login" />} />

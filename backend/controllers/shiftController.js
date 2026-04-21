@@ -108,6 +108,49 @@ exports.deleteShift = async (req, res) => {
   }
 };
 
+// Get calendar data: my shifts + open swaps for a given month
+exports.getCalendarData = async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    const m = parseInt(month);
+    const y = parseInt(year);
+
+    if (!m || !y || m < 1 || m > 12) {
+      return res.status(400).json({ message: 'Valid month and year are required' });
+    }
+
+    const startDate = `${y}-${String(m).padStart(2, '0')}-01`;
+    const endDate = new Date(y, m, 0).toISOString().split('T')[0]; // last day of month
+
+    const myShifts = await pool.query(
+      `SELECT s.shift_id, s.date, s.start_time, s.end_time, s.position, s.location
+       FROM shifts s
+       WHERE s.user_id = $1 AND s.date >= $2 AND s.date <= $3
+       ORDER BY s.date ASC, s.start_time ASC`,
+      [req.user.userId, startDate, endDate]
+    );
+
+    const openSwaps = await pool.query(
+      `SELECT sr.request_id, sr.reason, s.shift_id, s.date, s.start_time, s.end_time, s.position, s.location,
+              u.first_name, u.last_name
+       FROM swap_requests sr
+       JOIN shifts s ON sr.shift_id = s.shift_id
+       JOIN users u ON sr.requesting_user_id = u.user_id
+       WHERE sr.status = 'open'
+         AND sr.requesting_user_id != $1
+         AND s.date >= $2
+         AND s.date <= $3
+       ORDER BY s.date ASC, s.start_time ASC`,
+      [req.user.userId, startDate, endDate]
+    );
+
+    res.json({ myShifts: myShifts.rows, openSwaps: openSwaps.rows });
+  } catch (error) {
+    console.error('Get calendar data error:', error);
+    res.status(500).json({ message: 'Server error fetching calendar data' });
+  }
+};
+
 // Get all employees (for shift assignment dropdown)
 exports.getEmployees = async (req, res) => {
   try {
