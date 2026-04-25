@@ -40,6 +40,9 @@ function Layout({ children }) {
               <NavLink to="/approvals" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                 Approvals
               </NavLink>
+              <NavLink to="/manager-dashboard" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+               Team Overview
+            </NavLink>
             </>
           )}
         </nav>

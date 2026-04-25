@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard';
+import ManagerDashboard from './pages/ManagerDashboard';
 import MyShifts from './pages/MyShifts';
 import SwapRequests from './pages/SwapRequests';
 import ManageShifts from './pages/ManageShifts';
@@ -33,6 +34,7 @@ function App() {
         <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
         <Route path="/manage-shifts" element={<ManagerRoute><ManageShifts /></ManagerRoute>} />
         <Route path="/approvals" element={<ManagerRoute><Approvals /></ManagerRoute>} />
+        <Route path="/manager-dashboard" element={<ManagerRoute><ManagerDashboard /></ManagerRoute>} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>

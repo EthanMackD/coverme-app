@@ -13,6 +13,7 @@ router.get('/employees', shiftController.getEmployees);
 
 // Manager routes
 router.get('/all', requireRole('manager', 'admin'), shiftController.getAllShifts);
+router.get('/dashboard-stats', requireRole('manager', 'admin'), shiftController.getDashboardStats);
 router.post('/', requireRole('manager', 'admin'), shiftController.createShift);
 router.put('/:id', requireRole('manager', 'admin'), shiftController.updateShift);
 router.delete('/:id', requireRole('manager', 'admin'), shiftController.deleteShift);

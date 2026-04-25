@@ -155,7 +155,7 @@ exports.getCalendarData = async (req, res) => {
 exports.getEmployees = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT user_id, first_name, last_name, email, role, position
+      `SELECT user_id, first_name, last_name, email, role
        FROM users
        ORDER BY first_name ASC`
     );
@@ -163,5 +163,39 @@ exports.getEmployees = async (req, res) => {
   } catch (error) {
     console.error('Get employees error:', error);
     res.status(500).json({ message: 'Server error fetching employees' });
+  }
+};
+
+// Get manager dashboard overview (managers only)
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+
+    const [employees, todayShifts, upcomingShifts, pendingSwaps] = await Promise.all([
+      pool.query(`SELECT user_id, first_name, last_name, email, role FROM users ORDER BY first_name ASC`),
+      pool.query(
+        `SELECT s.*, u.first_name, u.last_name
+         FROM shifts s JOIN users u ON s.user_id = u.user_id
+         WHERE s.date = $1 ORDER BY s.start_time ASC`, [today]
+      ),
+      pool.query(
+        `SELECT s.*, u.first_name, u.last_name
+         FROM shifts s JOIN users u ON s.user_id = u.user_id
+         WHERE s.date > $1 ORDER BY s.date ASC, s.start_time ASC LIMIT 20`, [today]
+      ),
+      pool.query(
+        `SELECT COUNT(*) as count FROM swap_requests WHERE status = 'claimed'`
+      )
+    ]);
+
+    res.json({
+      employees: employees.rows,
+      todayShifts: todayShifts.rows,
+      upcomingShifts: upcomingShifts.rows,
+      pendingSwaps: parseInt(pendingSwaps.rows[0].count)
+    });
+  } catch (error) {
+    console.error('Dashboard stats error:', error);
+    res.status(500).json({ message: 'Server error fetching dashboard stats' });
   }
 };
