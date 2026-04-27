@@ -9,6 +9,7 @@ import Approvals from './pages/Approvals';
 import Calendar from './pages/Calendar';
 import Layout from './components/Layout';
 import './index.css';
+import Profile from './pages/Profile';
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -36,6 +37,7 @@ function App() {
         <Route path="/approvals" element={<ManagerRoute><Approvals /></ManagerRoute>} />
         <Route path="/manager-dashboard" element={<ManagerRoute><ManagerDashboard /></ManagerRoute>} />
         <Route path="*" element={<Navigate to="/login" />} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );

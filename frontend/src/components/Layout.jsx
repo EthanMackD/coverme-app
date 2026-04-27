@@ -31,6 +31,9 @@ function Layout({ children }) {
           <NavLink to="/calendar" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             Calendar
           </NavLink>
+          <NavLink to="/profile" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            My Profile
+          </NavLink>
           {user?.role === 'manager' && (
             <>
               <div className="nav-divider">Manager</div>
