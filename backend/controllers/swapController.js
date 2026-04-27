@@ -106,7 +106,7 @@ exports.claimSwapRequest = async (req, res) => {
 
     // Create the claim
     await pool.query(
-      `INSERT INTO swap_claims (swap_request_id, claiming_user_id)
+      `INSERT INTO swap_claims (request_id, claiming_user_id)
        VALUES ($1, $2)`,
       [id, req.user.userId]
     );
@@ -170,8 +170,7 @@ exports.approveSwap = async (req, res) => {
     }
 
     const claim = await pool.query(
-      'SELECT * FROM swap_claims WHERE swap_request_id = $1 ORDER BY claim_timestamp DESC LIMIT 1',
-      [id]
+    'SELECT * FROM swap_claims WHERE request_id = $1 ORDER BY claimed_at DESC LIMIT 1',      [id]
     );
 
     if (claim.rows.length === 0) {
@@ -180,9 +179,9 @@ exports.approveSwap = async (req, res) => {
 
     // Record the approval
     await pool.query(
-      `INSERT INTO approvals (swap_request_id, claiming_user_id, manager_id, approved)
+      `INSERT INTO approvals (request_id, claim_id, manager_id, approved)
        VALUES ($1, $2, $3, $4)`,
-      [id, claim.rows[0].claiming_user_id, req.user.userId, approved]
+      [id, claim.rows[0].claim_id, req.user.userId, approved]
     );
 
     // Update swap request status
@@ -217,7 +216,7 @@ exports.getPendingApprovals = async (req, res) => {
        FROM swap_requests sr
        JOIN shifts s ON sr.shift_id = s.shift_id
        JOIN users req_u ON sr.requesting_user_id = req_u.user_id
-       JOIN swap_claims sc ON sr.request_id = sc.swap_request_id
+       JOIN swap_claims sc ON sr.request_id = sc.request_id
        JOIN users claim_u ON sc.claiming_user_id = claim_u.user_id
        WHERE sr.status = 'claimed'
        ORDER BY s.date ASC`
